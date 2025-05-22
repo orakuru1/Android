@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">翻訳クイズ</string>
+
+    <string name="question_label">問題文</string>
+    <string name="count_label">Q%d</string>
+    <string name="btn_answer">選択肢</string>
+
+    <string name="result_title">結果</string>
+    <string name="result_score">10問中%d問正解</string>
+    <string name="result_total_score">トータルスコア : %d</string>
+    <string name="btn_return">もどる</string>
+</resources>
