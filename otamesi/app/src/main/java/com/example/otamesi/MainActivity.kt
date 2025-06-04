@@ -22,7 +22,7 @@ private var score = 0
 
 
         val database = FirebaseDatabase.getInstance()
-        val roomRef = database.getReference("rooms/room12345")
+        val roomRef = database.getReference("rooms/room12345/player2")
 /*
         val playerData = mapOf(
             "name" to "からす",
@@ -40,7 +40,8 @@ private var score = 0
                 "ready" to true,
                 "score" to score
             )
-            roomRef.child("player2").setValue(playerData)
+            //roomRef.child("player2").setValue(playerData)
+            roomRef.updateChildren(playerData)
         }
     }
 }

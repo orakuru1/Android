@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
+    id("com.google.gms.google-services") // ✅ 文字列は () にする
 }
 
 android {
@@ -35,6 +36,8 @@ android {
 }
 
 dependencies {
+    implementation("com.google.firebase:firebase-analytics-ktx:21.5.0")
+    implementation("com.google.firebase:firebase-database-ktx:20.3.0")
 
     implementation(libs.appcompat)
     implementation(libs.material)
