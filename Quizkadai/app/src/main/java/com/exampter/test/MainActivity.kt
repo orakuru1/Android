@@ -12,6 +12,10 @@ import com.exampter.test.databinding.ActivityMainBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.database.FirebaseDatabase
 import java.util.Collections
+import android.util.Log
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
     private var binding: ActivityMainBinding? = null
@@ -133,16 +137,49 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding!!.root)
 
-        val database = FirebaseDatabase.getInstance()
-        val roomRef = database.getReference("rooms/room12345/player1")
+        val roomId = "12345"
+        val roomRef = FirebaseDatabase.getInstance().getReference("rooms/$roomId")
 
+        val PN = "player1"
         val playerData = mapOf(
-            "name" to "sfdas",
-            "ready" to "safwea",
-            "score" to 4
+            "name" to PN,
+            "ready" to "false",
+            "score" to 0
         )
 
-        roomRef.setValue(playerData)
+        val PN2 = "player2"
+        val playerData2 = mapOf(
+            "name" to PN2,
+            "ready" to "false",
+            "score" to 0
+        )
+
+        roomRef.child(PN).setValue(playerData)
+        roomRef.child(PN2).setValue(playerData2)
+
+        roomRef.addValueEventListener(object : ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val player1 = snapshot.child("player1").child("name").getValue(String::class.java)
+                val player2 = snapshot.child("player2").child("name").getValue(String::class.java)
+
+                if(player1 != null && player2 != null)
+                {
+                    //両方そろってるのでゲーム開始
+                    Log.d("Firebase","2人そろいました!")
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("Firebase","データ習得失敗:${error.message}")
+            }
+        })
+
+        roomRef.get().addOnSuccessListener { dataSnapshot ->
+            val name = dataSnapshot.child("name").getValue(String::class.java)
+            Log.d("Firebase", "プレイヤー名: $name")
+        }.addOnFailureListener {
+            Log.e("Firebase", "取得に失敗: ${it.message}")
+        }
 
         playerName = intent.getStringExtra("playerName")
         if (playerName == null) playerName = "ゲスト"
