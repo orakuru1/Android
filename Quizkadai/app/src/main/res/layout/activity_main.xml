@@ -32,6 +32,7 @@
         android:text="@string/btn_answer"
         tools:ignore="DuplicateSpeakableTextCheck" />
 
+
     <Button
         android:id="@+id/answerBtn2"
         android:layout_width="300dp"
