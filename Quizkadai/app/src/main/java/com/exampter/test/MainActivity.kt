@@ -147,15 +147,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             "score" to 0
         )
 
-        val PN2 = "player2"
-        val playerData2 = mapOf(
-            "name" to PN2,
-            "ready" to "false",
-            "score" to 0
-        )
+
 
         roomRef.child(PN).setValue(playerData)
-        roomRef.child(PN2).setValue(playerData2)
+
 
         roomRef.addValueEventListener(object : ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
