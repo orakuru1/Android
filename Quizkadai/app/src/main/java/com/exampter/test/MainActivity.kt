@@ -137,26 +137,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding!!.root)
 
-        val roomId = "12345"
-        val roomRef = FirebaseDatabase.getInstance().getReference("rooms/$roomId")
 
-        val PN = "player1"
-        val playerData = mapOf(
-            "name" to PN,
-            "ready" to "false",
-            "score" to 0
-        )
-
-        val PN2 = "player2"
-        val playerData2 = mapOf(
-            "name" to PN2,
-            "ready" to "false",
-            "score" to 0
-        )
-
-        roomRef.child(PN).setValue(playerData)
-        roomRef.child(PN2).setValue(playerData2)
-
+/*
         roomRef.addValueEventListener(object : ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
                 val player1 = snapshot.child("player1").child("name").getValue(String::class.java)
@@ -166,6 +148,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 {
                     //両方そろってるのでゲーム開始
                     Log.d("Firebase","2人そろいました!")
+                    // 両方そろったら1回だけクイズ開始
+                    roomRef.removeEventListener(this) // ★ 二重起動防止
+
+                    runOnUiThread {
+                        startQuiz()
+                    }
                 }
             }
 
@@ -174,12 +162,19 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             }
         })
 
+ */
+
+
+/*
         roomRef.get().addOnSuccessListener { dataSnapshot ->
             val name = dataSnapshot.child("name").getValue(String::class.java)
             Log.d("Firebase", "プレイヤー名: $name")
         }.addOnFailureListener {
             Log.e("Firebase", "取得に失敗: ${it.message}")
         }
+
+ */
+
 
         playerName = intent.getStringExtra("playerName")
         if (playerName == null) playerName = "ゲスト"
@@ -225,6 +220,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         binding!!.answerBtn3.text = quiz[2]
         binding!!.answerBtn4.text = quiz[3]
     }
+
 
     override fun onClick(v: View) {
         val answerBtn = v as Button
