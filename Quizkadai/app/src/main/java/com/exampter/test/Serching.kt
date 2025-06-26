@@ -17,6 +17,8 @@ class Serching : AppCompatActivity() {
 
     private lateinit var roomRef: DatabaseReference
     private val roomid = "12345"
+    private var myPlayerKey = ""
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,36 +28,41 @@ class Serching : AppCompatActivity() {
 
         val playerName = intent.getStringExtra("playerName") ?: "ゲスト"
 
-        val playerData = mapOf(
-            "name" to playerName,
-            "ready" to false,
-            "score" to 0
-        )
+        roomRef.get().addOnSuccessListener { snapshot ->    //get()やsetValue()は非同期なので、成功したときにやる
+            val player1Exists = snapshot.hasChild("player1")
+            myPlayerKey = if (player1Exists) "player2" else "player1"
 
-        roomRef.child("player1").setValue(playerData)
+            val playerData = mapOf(
+                "name" to playerName,
+                "ready" to false,
+                "score" to 0
+            )
 
-        roomRef.addValueEventListener(object : ValueEventListener{
-            override fun onDataChange(snapshot: DataSnapshot) {
-                val player1 = snapshot.child("player1").child("name").getValue(String::class.java)
-                val player2 = snapshot.child("player2").child("name").getValue(String::class.java)
+            roomRef.child(myPlayerKey).setValue(playerData).addOnSuccessListener {
+                // ここで listener を登録する
+                roomRef.addValueEventListener(object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        val player1 = snapshot.child("player1").child("name").getValue(String::class.java)
+                        val player2 = snapshot.child("player2").child("name").getValue(String::class.java)
 
-                if (player1 != null && player2 != null)
-                {
-                    Log.d("Firebase", "2人そろいました!")
-                    roomRef.removeEventListener(this)
+                        if (player1 != null && player2 != null) {
+                            Log.d("Firebase", "2人そろいました!")
+                            roomRef.removeEventListener(this)
 
-                    // クイズ画面に遷移
-                    val intent = Intent(this@Serching, MainActivity::class.java)
-                    intent.putExtra("playerName", playerName)
-                    startActivity(intent)
-                    finish()
-                }
+                            val intent = Intent(this@Serching, MainActivity::class.java)
+                            intent.putExtra("playerName", playerName)
+                            intent.putExtra("roomID", roomid)
+                            intent.putExtra("myPlayerKey", myPlayerKey)
+                            startActivity(intent)
+                            finish()
+                        }
+                    }
 
+                    override fun onCancelled(error: DatabaseError) {
+                        Log.e("Firebase", "データ取得失敗: ${error.message}")
+                    }
+                })
             }
-
-            override fun onCancelled(error: DatabaseError) {
-                Log.e("Firebase", "データ取得失敗: ${error.message}")
-            }
-        })
+        }
     }
 }

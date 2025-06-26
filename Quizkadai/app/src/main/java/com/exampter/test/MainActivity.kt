@@ -28,104 +28,26 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
     private val quizArray = ArrayList<ArrayList<String?>?>()
     private val quizData = arrayOf(
-        arrayOf(
-            "「I’ll Kill You」と「I’ll Kill You」は彼の最も有名な曲です、メグミ。",
-            "呪術廻戦",
-            "長崎市",
-            "福島市",
-            "前橋市"
-        ),
-        arrayOf(
-            "走らないで、走らないで、走らないで。",
-            "エヴァンゲリオン",
-            "広島市",
-            "甲府市",
-            "岡山市"
-        ),
-        arrayOf(
-            "たとえ彼が邪魔をしたり、裏切ったり、私が世間知らずだと言ったとしても、私は彼を信じたかったのです！",
-            "約束のネバーランド",
-            "大分市",
-            "秋田市",
-            "福岡市"
-        ),
-        arrayOf(
-            "主人公の仕事は、人生という冒険の中で偉業を成し遂げることです。",
-            "僕のヒーローアカデミア",
-            "水戸市",
-            "岐阜市",
-            "福井市"
-        ),
-        arrayOf(
-            "私は二度逮捕されました。父は一度も私を叩いたことがありません!",
-            "機動戦士ガンダム",
-            "横浜市",
-            "鳥取市",
-            "仙台市"
-        ),
+        arrayOf("「I’ll Kill You」と「I’ll Kill You」は彼の最も有名な曲です、メグミ。", "呪術廻戦", "長崎市", "福島市", "前橋市"),
+        arrayOf("走らないで、走らないで、走らないで。", "エヴァンゲリオン", "広島市", "甲府市", "岡山市"),
+        arrayOf("たとえ彼が邪魔をしたり、裏切ったり、私が世間知らずだと言ったとしても、私は彼を信じたかったのです！", "約束のネバーランド", "大分市", "秋田市", "福岡市"),
+        arrayOf("主人公の仕事は、人生という冒険の中で偉業を成し遂げることです。", "僕のヒーローアカデミア", "水戸市", "岐阜市", "福井市"),
+        arrayOf("私は二度逮捕されました。父は一度も私を叩いたことがありません!", "機動戦士ガンダム", "横浜市", "鳥取市", "仙台市"),
         arrayOf("痩せたいならこれを食べなさい！！！", "バキ", "青森市", "山口市", "奈良市"),
-        arrayOf(
-            "質問に質問で答えないでください!!生徒たちに質問に質問で答えることを教えているのでしょうか?",
-            "ジョジョの奇妙な冒険",
-            "盛岡市",
-            "新宿区",
-            "京都市"
-        ),
-        arrayOf(
-            "生きるか死ぬかを他人に決めさせないでください!",
-            "鬼滅の刃",
-            "金沢市",
-            "名古屋市",
-            "奈良市"
-        ),
+        arrayOf("質問に質問で答えないでください!!生徒たちに質問に質問で答えることを教えているのでしょうか?", "ジョジョの奇妙な冒険", "盛岡市", "新宿区", "京都市"),
+        arrayOf("生きるか死ぬかを他人に決めさせないでください!", "鬼滅の刃", "金沢市", "名古屋市", "奈良市"),
         arrayOf("また会ったら友達と呼んでくれますか？", "ONE PIECE", "札幌市", "岡山市", "奈良市"),
         arrayOf("包帯を巻いてくれてありがとう", "進撃の巨人", "福岡市", "松江市", "福井市"),
         arrayOf("めっちゃ寒いです…！", "カイジ", "長崎市", "福島市", "前橋市"),
-        arrayOf(
-            "しかし、私のような凡人には下を向いている暇があるだろうか？",
-            "ハイキュー!!",
-            "広島市",
-            "甲府市",
-            "岡山市"
-        ),
-        arrayOf(
-            "不思議！ 「愛している」…知りたい",
-            "ヴァイオレット・エヴァーガーデン",
-            "大分市",
-            "秋田市",
-            "福岡市"
-        ),
-        arrayOf(
-            "これはジェッドアームストロングの上にニールアームストロングが乗っているのでしょうか？",
-            "銀魂",
-            "水戸市",
-            "岐阜市",
-            "福井市"
-        ),
+        arrayOf("しかし、私のような凡人には下を向いている暇があるだろうか？", "ハイキュー!!", "広島市", "甲府市", "岡山市"),
+        arrayOf("不思議！ 「愛している」…知りたい", "ヴァイオレット・エヴァーガーデン", "大分市", "秋田市", "福岡市"),
+        arrayOf("これはジェッドアームストロングの上にニールアームストロングが乗っているのでしょうか？", "銀魂", "水戸市", "岐阜市", "福井市"),
         arrayOf("止まったよ────止まれ！", "NARUTO -ナルト-", "横浜市", "鳥取市", "仙台市"),
-        arrayOf(
-            "立ち上がって、歩いて、前へ進みましょう。あなたの足は大丈夫です。",
-            "鋼の錬金術師",
-            "青森市",
-            "山口市",
-            "奈良市"
-        ),
+        arrayOf("立ち上がって、歩いて、前へ進みましょう。あなたの足は大丈夫です。", "鋼の錬金術師", "青森市", "山口市", "奈良市"),
         arrayOf("彼は新世界の神となった。", "DEATH NOTE -デスノート-", "盛岡市", "新宿区", "京都市"),
         arrayOf("君は死んだ！", "北斗の拳", "金沢市", "名古屋市", "奈良市"),
-        arrayOf(
-            "さて、これが最後です。頑張って下さい。",
-            "HUNTER×HUNTER",
-            "札幌市",
-            "岡山市",
-            "奈良市"
-        ),
-        arrayOf(
-            "十分な経験があれば、弱者でもエリートに勝つことができます。",
-            "ドラゴンボール",
-            "福岡市",
-            "松江市",
-            "福井市"
-        ),
+        arrayOf("さて、これが最後です。頑張って下さい。", "HUNTER×HUNTER", "札幌市", "岡山市", "奈良市"),
+        arrayOf("十分な経験があれば、弱者でもエリートに勝つことができます。", "ドラゴンボール", "福岡市", "松江市", "福井市"),
     )
 
     private var playerName: String? = null
@@ -136,44 +58,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         this.enableEdgeToEdge()
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding!!.root)
-
-
-/*
-        roomRef.addValueEventListener(object : ValueEventListener{
-            override fun onDataChange(snapshot: DataSnapshot) {
-                val player1 = snapshot.child("player1").child("name").getValue(String::class.java)
-                val player2 = snapshot.child("player2").child("name").getValue(String::class.java)
-
-                if(player1 != null && player2 != null)
-                {
-                    //両方そろってるのでゲーム開始
-                    Log.d("Firebase","2人そろいました!")
-                    // 両方そろったら1回だけクイズ開始
-                    roomRef.removeEventListener(this) // ★ 二重起動防止
-
-                    runOnUiThread {
-                        startQuiz()
-                    }
-                }
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                Log.e("Firebase","データ習得失敗:${error.message}")
-            }
-        })
-
- */
-
-
-/*
-        roomRef.get().addOnSuccessListener { dataSnapshot ->
-            val name = dataSnapshot.child("name").getValue(String::class.java)
-            Log.d("Firebase", "プレイヤー名: $name")
-        }.addOnFailureListener {
-            Log.e("Firebase", "取得に失敗: ${it.message}")
-        }
-
- */
 
 
         playerName = intent.getStringExtra("playerName")
