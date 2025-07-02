@@ -63,6 +63,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         playerName = intent.getStringExtra("playerName")
         if (playerName == null) playerName = "ゲスト"
 
+
         ViewCompat.setOnApplyWindowInsetsListener(
             findViewById(R.id.main)
         ) { v: View, insets: WindowInsetsCompat ->

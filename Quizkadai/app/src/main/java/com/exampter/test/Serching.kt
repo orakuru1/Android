@@ -54,6 +54,7 @@ class Serching : AppCompatActivity() {
                             intent.putExtra("roomID", roomid)
                             intent.putExtra("myPlayerKey", myPlayerKey)
                             startActivity(intent)
+                            roomRef.child(myPlayerKey).onDisconnect().removeValue()  // ネット切断・アプリ強制終了時にも自動で削除
                             finish()
                         }
                     }
@@ -62,6 +63,7 @@ class Serching : AppCompatActivity() {
                         Log.e("Firebase", "データ取得失敗: ${error.message}")
                     }
                 })
+
             }
         }
     }
