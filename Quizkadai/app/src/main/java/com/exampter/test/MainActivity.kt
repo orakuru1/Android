@@ -17,6 +17,12 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 
+data class Quiz(
+    val question: String = "",
+    val answer: String = "",
+    val choices: List<String> = listOf()
+)
+
 class MainActivity : AppCompatActivity(), View.OnClickListener {
     private var binding: ActivityMainBinding? = null
 
@@ -27,6 +33,15 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     private var correctStreak = 0
 
     private val quizArray = ArrayList<ArrayList<String?>?>()
+
+    var roomID = intent.getStringExtra("roomID")
+    var playerID = intent.getStringExtra("roomID")
+
+    val quizList = mutableListOf<Quiz>()
+
+    val database = FirebaseDatabase.getInstance()
+    val quizRef = database.getReference("quizness")
+
     private val quizData = arrayOf(
         arrayOf("「I’ll Kill You」と「I’ll Kill You」は彼の最も有名な曲です、メグミ。", "呪術廻戦", "長崎市", "福島市", "前橋市"),
         arrayOf("走らないで、走らないで、走らないで。", "エヴァンゲリオン", "広島市", "甲府市", "岡山市"),
@@ -50,6 +65,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         arrayOf("十分な経験があれば、弱者でもエリートに勝つことができます。", "ドラゴンボール", "福岡市", "松江市", "福井市"),
     )
 
+
+
+
+
     private var playerName: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -59,14 +78,37 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding!!.root)
 
+        quizRef.addListenerForSingleValueEvent(object : ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                for(quizSnapshot in snapshot.children){
+                    val question = quizSnapshot.child("question").getValue(String::class.java)
+                    val answer = quizSnapshot.child("answer").getValue(String::class.java)
+                    val choices = quizSnapshot.child("choices").children.map { it.getValue(String::class.java) }
+
+                    val quiz = Quiz(
+                        question ?: "質問なし",
+                        answer ?: "答えなし",
+                        choices.filterNotNull()
+                    )
+                    quizList.add(quiz)
+
+                }
+                Log.d("QuizList", "読み込んだクイズ数：${quizList.size}")
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("QuizLoad", "読み込み失敗:${error.message}")
+            }
+        })
 
         playerName = intent.getStringExtra("playerName")
         if (playerName == null) playerName = "ゲスト"
 
 
+
         ViewCompat.setOnApplyWindowInsetsListener(
-            findViewById(R.id.main)
-        ) { v: View, insets: WindowInsetsCompat ->
+                findViewById(R.id.main)
+                ) { v: View, insets: WindowInsetsCompat ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets

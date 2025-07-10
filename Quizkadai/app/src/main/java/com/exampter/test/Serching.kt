@@ -38,7 +38,9 @@ class Serching : AppCompatActivity() {
                 "score" to 0
             )
 
+
             roomRef.child(myPlayerKey).setValue(playerData).addOnSuccessListener {
+                roomRef.child(myPlayerKey).onDisconnect().removeValue()  // ネット切断・アプリ強制終了時にも自動で削除
                 // ここで listener を登録する
                 roomRef.addValueEventListener(object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
@@ -54,7 +56,6 @@ class Serching : AppCompatActivity() {
                             intent.putExtra("roomID", roomid)
                             intent.putExtra("myPlayerKey", myPlayerKey)
                             startActivity(intent)
-                            roomRef.child(myPlayerKey).onDisconnect().removeValue()  // ネット切断・アプリ強制終了時にも自動で削除
                             finish()
                         }
                     }
