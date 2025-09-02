@@ -19,6 +19,7 @@ class Serching : AppCompatActivity() {
     private val roomid = "12345"
     private var myPlayerKey = ""
 
+    private val questionID = listOf("quiz1","quiz2","quiz3","quiz4","quiz5","quiz6","quiz7","quiz8","quiz9","quiz10")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,9 +39,21 @@ class Serching : AppCompatActivity() {
                 "score" to 0
             )
 
+            //プレイヤー１だったら問題のIDを持ってきて、シャッフルして、アップロードする
+            if(myPlayerKey == "player1")//シャッフルしたデータをデータベースに送る実験中
+            {
+                val shuffleQuestion = questionID.shuffled()
+
+                val updates = mapOf("quizList" to shuffleQuestion)
+                roomRef.updateChildren(updates)
+
+                roomRef.child("questionsID").setValue(shuffleQuestion)
+
+            }
+
 
             roomRef.child(myPlayerKey).setValue(playerData).addOnSuccessListener {
-                roomRef.child(myPlayerKey).onDisconnect().removeValue()  // ネット切断・アプリ強制終了時にも自動で削除
+                //roomRef.child(myPlayerKey).onDisconnect().removeValue()  // ネット切断・アプリ強制終了時にも自動で削除
                 // ここで listener を登録する
                 roomRef.addValueEventListener(object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {

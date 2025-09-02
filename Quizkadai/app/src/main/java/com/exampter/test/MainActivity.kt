@@ -20,7 +20,7 @@ import com.google.firebase.database.ValueEventListener
 data class Quiz(
     val question: String = "",
     val answer: String = "",
-    val choices: List<String> = listOf()
+    val choices: List<String> = emptyList()
 )
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
@@ -33,9 +33,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     private var correctStreak = 0
 
     private val quizArray = ArrayList<ArrayList<String?>?>()
-
-    var roomID = intent.getStringExtra("roomID")
-    var playerID = intent.getStringExtra("roomID")
 
     val quizList = mutableListOf<Quiz>()
 
@@ -78,23 +75,64 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding!!.root)
 
+        //var roomID = intent.getStringExtra("roomID")
+
+        val myPlayerKey = intent.getStringExtra("myPlayerKey")
+        //確か、一回は必ずやる処理だったと思う
         quizRef.addListenerForSingleValueEvent(object : ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
-                for(quizSnapshot in snapshot.children){
-                    val question = quizSnapshot.child("question").getValue(String::class.java)
-                    val answer = quizSnapshot.child("answer").getValue(String::class.java)
-                    val choices = quizSnapshot.child("choices").children.map { it.getValue(String::class.java) }
+                //いずれ完成したときに使う、最初の一人が問題をシャッフルして、戻すために。
+                if("player1" == myPlayerKey)
+                {
+                    //データベースにあるデータを読み込む
+                    for(quizSnapshot in snapshot.children){
+                        val question = quizSnapshot.child("question").getValue(String::class.java)
+                        val answer = quizSnapshot.child("answer").getValue(String::class.java)
+                        val choices = quizSnapshot.child("choices").children.map { it.getValue(String::class.java) }
 
-                    val quiz = Quiz(
-                        question ?: "質問なし",
-                        answer ?: "答えなし",
-                        choices.filterNotNull()
-                    )
-                    quizList.add(quiz)
+                        val quiz = Quiz(
+                            question ?: "質問なし",
+                            answer ?: "答えなし",
+                            choices.filterNotNull()
+                        )
+                        quizList.add(quiz)
+
+                    }
+                    quizList.shuffle()
+
+                    Log.d("QuizList", "読み込んだクイズ数：${quizList.size}")
+
+                    //問題文を取り込んで、シャッフルできたかの確認
+                    for (quiznam in quizList)
+                    {
+                        Log.d("QuizList", "クイズの質問：${quiznam.question}")
+                        Log.d("QuizList", "クイズの中身：${quiznam.choices}")
+                        Log.d("QuizList", "クイズの答え：${quiznam.answer}")
+                    }
+
+                    // データベースに上書き保存する用のMap
+                    val updateMap = mutableMapOf<String, Any>()
+                    quizList.forEachIndexed { index, quiz ->
+                        val quizId = "quiz${index + 1}"  // quiz1, quiz2, ...
+                        updateMap[quizId] = mapOf(
+                            "question" to quiz.question,
+                            "answer" to quiz.answer,
+                            "choices" to quiz.choices
+                        )
+                    }
+
+                    // 上書き保存
+                    quizRef.setValue(updateMap)
+                        .addOnSuccessListener {
+                            Log.d("QuizList", "シャッフル後のクイズを保存しました")
+                        }
+                        .addOnFailureListener { e ->
+                            Log.e("QuizList", "保存失敗: ${e.message}")
+                        }
 
                 }
-                Log.d("QuizList", "読み込んだクイズ数：${quizList.size}")
             }
+
 
             override fun onCancelled(error: DatabaseError) {
                 Log.e("QuizLoad", "読み込み失敗:${error.message}")
