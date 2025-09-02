@@ -81,34 +81,29 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         //確か、一回は必ずやる処理だったと思う
         quizRef.addListenerForSingleValueEvent(object : ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
-                //いずれ完成したときに使う、最初の一人が問題をシャッフルして、戻すために。
+                //データベースにあるデータを読み込む
+                for(quizSnapshot in snapshot.children){
+                    val question = quizSnapshot.child("question").getValue(String::class.java)
+                    val answer = quizSnapshot.child("answer").getValue(String::class.java)
+                    val choices = quizSnapshot.child("choices").children.map { it.getValue(String::class.java) }
+
+                    val quiz = Quiz(
+                        question ?: "質問なし",
+                        answer ?: "答えなし",
+                        choices.filterNotNull()
+                    )
+                    quizList.add(quiz)
+
+                }
+
                 if("player1" == myPlayerKey)
                 {
-                    //データベースにあるデータを読み込む
-                    for(quizSnapshot in snapshot.children){
-                        val question = quizSnapshot.child("question").getValue(String::class.java)
-                        val answer = quizSnapshot.child("answer").getValue(String::class.java)
-                        val choices = quizSnapshot.child("choices").children.map { it.getValue(String::class.java) }
 
-                        val quiz = Quiz(
-                            question ?: "質問なし",
-                            answer ?: "答えなし",
-                            choices.filterNotNull()
-                        )
-                        quizList.add(quiz)
-
-                    }
                     quizList.shuffle()
 
                     Log.d("QuizList", "読み込んだクイズ数：${quizList.size}")
 
-                    //問題文を取り込んで、シャッフルできたかの確認
-                    for (quiznam in quizList)
-                    {
-                        Log.d("QuizList", "クイズの質問：${quiznam.question}")
-                        Log.d("QuizList", "クイズの中身：${quiznam.choices}")
-                        Log.d("QuizList", "クイズの答え：${quiznam.answer}")
-                    }
+
 
                     // データベースに上書き保存する用のMap
                     val updateMap = mutableMapOf<String, Any>()
@@ -130,6 +125,14 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                             Log.e("QuizList", "保存失敗: ${e.message}")
                         }
 
+                }
+
+                //問題文を取り込んで、シャッフルできたかの確認
+                for (quiznam in quizList)
+                {
+                    Log.d("QuizList", "クイズの質問：${quiznam.question}")
+                    Log.d("QuizList", "クイズの中身：${quiznam.choices}")
+                    Log.d("QuizList", "クイズの答え：${quiznam.answer}")
                 }
             }
 
