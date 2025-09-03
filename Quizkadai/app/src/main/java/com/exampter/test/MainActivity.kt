@@ -39,6 +39,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     val database = FirebaseDatabase.getInstance()
     val quizRef = database.getReference("quizness")
 
+
     private val quizData = arrayOf(
         arrayOf("「I’ll Kill You」と「I’ll Kill You」は彼の最も有名な曲です、メグミ。", "呪術廻戦", "長崎市", "福島市", "前橋市"),
         arrayOf("走らないで、走らないで、走らないで。", "エヴァンゲリオン", "広島市", "甲府市", "岡山市"),
@@ -78,37 +79,40 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         //var roomID = intent.getStringExtra("roomID")
 
         val myPlayerKey = intent.getStringExtra("myPlayerKey")
+
+        val roomid = intent.getStringExtra("roomID")
+        val roomRef = database.getReference("room/$roomid")
+
         //確か、一回は必ずやる処理だったと思う
         quizRef.addListenerForSingleValueEvent(object : ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
-                //データベースにあるデータを読み込む
-                for(quizSnapshot in snapshot.children){
-                    val question = quizSnapshot.child("question").getValue(String::class.java)
-                    val answer = quizSnapshot.child("answer").getValue(String::class.java)
-                    val choices = quizSnapshot.child("choices").children.map { it.getValue(String::class.java) }
-
-                    val quiz = Quiz(
-                        question ?: "質問なし",
-                        answer ?: "答えなし",
-                        choices.filterNotNull()
-                    )
-                    quizList.add(quiz)
-
-                }
 
                 if("player1" == myPlayerKey)
                 {
+                    //データベースにあるデータを読み込む
+                    for(quizSnapshot in snapshot.children){
+                        val question = quizSnapshot.child("question").getValue(String::class.java)
+                        val answer = quizSnapshot.child("answer").getValue(String::class.java)
+                        val choices = quizSnapshot.child("choices").children.map { it.getValue(String::class.java) }
+
+                        val quiz = Quiz(
+                            question ?: "質問なし",
+                            answer ?: "答えなし",
+                            choices.filterNotNull()
+                        )
+                        quizList.add(quiz)
+
+                    }
 
                     quizList.shuffle()
 
                     Log.d("QuizList", "読み込んだクイズ数：${quizList.size}")
 
-
-
                     // データベースに上書き保存する用のMap
                     val updateMap = mutableMapOf<String, Any>()
                     quizList.forEachIndexed { index, quiz ->
-                        val quizId = "quiz${index + 1}"  // quiz1, quiz2, ...
+                        //001,002とゼロ埋め
+                        val quizId = String.format("quiz%03d", index + 1)
                         updateMap[quizId] = mapOf(
                             "question" to quiz.question,
                             "answer" to quiz.answer,
@@ -117,23 +121,41 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     }
 
                     // 上書き保存
-                    quizRef.setValue(updateMap)
-                        .addOnSuccessListener {
-                            Log.d("QuizList", "シャッフル後のクイズを保存しました")
-                        }
-                        .addOnFailureListener { e ->
-                            Log.e("QuizList", "保存失敗: ${e.message}")
+                    roomRef.child("ShullQuizList").setValue(updateMap)
+                }
+
+
+                if("player2" == myPlayerKey)
+                {
+                    // player2 はそのルームの ShullQuizList を読む
+                    roomRef.child("ShullQuizList").addListenerForSingleValueEvent(object : ValueEventListener {
+                        override fun onDataChange(snapshot: DataSnapshot) {
+                            quizList.clear()
+                            for (quizSnapshot in snapshot.children) {
+                                val question = quizSnapshot.child("question").getValue(String::class.java)
+                                val answer = quizSnapshot.child("answer").getValue(String::class.java)
+                                val choices = quizSnapshot.child("choices").children.map { it.getValue(String::class.java) }
+
+                                val quiz = Quiz(
+                                    question ?: "質問なし",
+                                    answer ?: "答えなし",
+                                    choices.filterNotNull()
+                                )
+                                quizList.add(quiz)
+                            }
                         }
 
+                        override fun onCancelled(error: DatabaseError) {}
+                    })
                 }
+
 
                 //問題文を取り込んで、シャッフルできたかの確認
                 for (quiznam in quizList)
                 {
-                    Log.d("QuizList", "クイズの質問：${quiznam.question}")
-                    Log.d("QuizList", "クイズの中身：${quiznam.choices}")
                     Log.d("QuizList", "クイズの答え：${quiznam.answer}")
                 }
+
             }
 
 
@@ -141,6 +163,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 Log.e("QuizLoad", "読み込み失敗:${error.message}")
             }
         })
+
+
 
         playerName = intent.getStringExtra("playerName")
         if (playerName == null) playerName = "ゲスト"
