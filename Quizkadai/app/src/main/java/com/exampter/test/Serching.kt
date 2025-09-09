@@ -16,10 +16,9 @@ import com.google.firebase.database.ValueEventListener
 class Serching : AppCompatActivity() {
 
     private lateinit var roomRef: DatabaseReference
-    private val roomid = "12345"
+    private val roomid = "0000"
     private var myPlayerKey = ""
 
-    private val questionID = listOf("quiz1","quiz2","quiz3","quiz4","quiz5","quiz6","quiz7","quiz8","quiz9","quiz10")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,18 +37,6 @@ class Serching : AppCompatActivity() {
                 "ready" to false,
                 "score" to 0
             )
-
-            //プレイヤー１だったら問題のIDを持ってきて、シャッフルして、アップロードする
-            if(myPlayerKey == "player1")//シャッフルしたデータをデータベースに送る実験中
-            {
-                val shuffleQuestion = questionID.shuffled()
-
-                val updates = mapOf("quizList" to shuffleQuestion)
-                roomRef.updateChildren(updates)
-
-                roomRef.child("questionsID").setValue(shuffleQuestion)
-
-            }
 
 
             roomRef.child(myPlayerKey).setValue(playerData).addOnSuccessListener {

@@ -21,8 +21,8 @@ class TitleActivity : AppCompatActivity() {
         //ボタンをクリックしたときにおこることを登録
         startButton.setOnClickListener { v: View? ->
             // 名前入力なしで「ゲスト」として開始
-            val playerName = "ゲスト"
-            val intent = Intent(this@TitleActivity, Serching::class.java)       //次の画面へ
+            val playerName = "ゲスト"  //名前入力するところあったっけ？
+            val intent = Intent(this@TitleActivity, HomeActivity::class.java)       //次の画面へ
             intent.putExtra("playerName", playerName)       //持っていくものを設定
             startActivity(intent)
             finish()

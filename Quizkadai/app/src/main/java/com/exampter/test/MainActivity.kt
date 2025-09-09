@@ -28,7 +28,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
     private var rightAnswerCount = 0
     private var quizCount = 1
-    private var rightAnswer: String? = null
+    //private var rightAnswer: String? = null
     private var score = 0
     private var correctStreak = 0
 
@@ -130,7 +130,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     Log.d("QuizList", "クイズの答え：${quiznam.answer}")
                 }
 
+                showNextQuiz()
+
             }
+
+
 
             override fun onCancelled(error: DatabaseError) {
                 Log.e("QuizLoad", "読み込み失敗:${error.message}")
@@ -160,8 +164,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     {
                         Log.d("QuizList", "クイズの答え：${quiznam.answer}")
                     }
-                    
+
+                    showNextQuiz()
+
                 }
+
+
 
                 override fun onCancelled(error: DatabaseError) {
                     Log.e("QuizLoad", "読み込み失敗:${error.message}")
@@ -189,16 +197,38 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         binding!!.answerBtn3.setOnClickListener(this)
         binding!!.answerBtn4.setOnClickListener(this)
 
-        for (quizDatum in quizData) {
-            val tmpArray = ArrayList<String?>()
-            Collections.addAll(tmpArray, *quizDatum)
-            quizArray.add(tmpArray)
-        }
 
-        Collections.shuffle(quizArray)
-        showNextQuiz()
     }
 
+    private var currentIndex = 0
+    private var rightAnswer  = ""
+
+    private fun showNextQuiz()//早押しを作りたい。そのためには、wifiの問題をどうにかしないと
+    {
+        if (currentIndex >= quizList.size) return
+
+        binding!!.countLabel.text = getString(R.string.count_label, quizCount)
+
+        val quiz = quizList[currentIndex]
+        binding!!.questionLabel.text = quiz.question
+        rightAnswer = quiz.answer
+
+        //正解を含めた選択肢をシャッフル
+        val options = quiz.choices.toMutableList()
+        options.add(rightAnswer)
+        options.shuffle()
+
+        binding!!.answerBtn1.text = options[0]
+        binding!!.answerBtn2.text = options[1]
+        binding!!.answerBtn3.text = options[2]
+        binding!!.answerBtn4.text = options[3]
+
+        currentIndex ++
+
+        Log.d("question","ここまで来ていますよー")//呼ばれてない
+    }
+
+    /*
     private fun showNextQuiz() {
         binding!!.countLabel.text = getString(R.string.count_label, quizCount)
 
@@ -217,6 +247,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         binding!!.answerBtn3.text = quiz[2]
         binding!!.answerBtn4.text = quiz[3]
     }
+
+     */
 
 
     override fun onClick(v: View) {
