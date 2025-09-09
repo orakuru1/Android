@@ -16,7 +16,6 @@ import com.google.firebase.database.ValueEventListener
 class Serching : AppCompatActivity() {
 
     private lateinit var roomRef: DatabaseReference
-    private val roomid = "0000"
     private var myPlayerKey = ""
 
 
@@ -24,9 +23,11 @@ class Serching : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_serching)
 
-    roomRef = FirebaseDatabase.getInstance().getReference("room/$roomid")
-
+        //前から送ってきたものを習得
         val playerName = intent.getStringExtra("playerName") ?: "ゲスト"
+        val roomid = intent.getStringExtra("roomID")
+
+        roomRef = FirebaseDatabase.getInstance().getReference("room/$roomid")
 
         roomRef.get().addOnSuccessListener { snapshot ->    //get()やsetValue()は非同期なので、成功したときにやる
             val player1Exists = snapshot.hasChild("player1")
