@@ -144,28 +144,28 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         if("player2" == myPlayerKey)
         {
             // player2 はそのルームの ShullQuizList を読む
-            roomRef.child("ShullQuizList").addListenerForSingleValueEvent(object : ValueEventListener {
+            roomRef.child("ShullQuizList").addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    quizList.clear()
-                    for (quizSnapshot in snapshot.children) {
-                        val question = quizSnapshot.child("question").getValue(String::class.java)
-                        val answer = quizSnapshot.child("answer").getValue(String::class.java)
-                        val choices = quizSnapshot.child("choices").children.map { it.getValue(String::class.java) }
-
-                        val quiz = Quiz(
-                            question ?: "質問なし",
-                            answer ?: "答えなし",
-                            choices.filterNotNull()
-                        )
-                        quizList.add(quiz)
-                    }
-                    //問題文を取り込んで、シャッフルできたかの確認
-                    for (quiznam in quizList)
+                    if (snapshot.exists())
                     {
-                        Log.d("QuizList", "クイズの答え：${quiznam.answer}")
-                    }
+                        quizList.clear()
+                        for (quizSnapshot in snapshot.children) {
+                            val question = quizSnapshot.child("question").getValue(String::class.java)
+                            val answer = quizSnapshot.child("answer").getValue(String::class.java)
+                            val choices = quizSnapshot.child("choices").children.map { it.getValue(String::class.java) }
 
-                    showNextQuiz()
+                            val quiz = Quiz(
+                                question ?: "質問なし",
+                                answer ?: "答えなし",
+                                choices.filterNotNull()
+                            )
+                            quizList.add(quiz)
+                        }
+                        showNextQuiz()
+
+                        //読み込みが成功したら、リスナーを外す
+                        roomRef.child("ShullQuizList").removeEventListener(this)
+                    }
 
                 }
 
