@@ -83,6 +83,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         val roomid = intent.getStringExtra("roomID")
         val roomRef = database.getReference("room/$roomid")
 
+
         //確か、一回は必ずやる処理だったと思う
         quizRef.addListenerForSingleValueEvent(object : ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -177,6 +178,30 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             })
         }
 
+        roomRef.child("buzz").addValueEventListener(object : ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val whoBuzzed  = snapshot.getValue(String::class.java)
+                if (whoBuzzed != null)
+                {
+                    if (whoBuzzed == myPlayerKey)
+                    {
+                        //自分が押したとき
+                        isenabledtrue()
+                    }
+                    else
+                    {
+                        //他の人が押したとき
+                        allisenabledfalse()
+                    }
+                }
+            }//他の人が正解したときどうなるのか、他の人が不正解だった時はどうなるのか。
+            //（正解）次の問題に二人とも変わって、ボタンだけ表示されてる状態になる
+            //（不正解）その人の回答権は無くなって、もう一人の回答になるのか、ボタンを押すまでか、後者の場合は、タイム制限が必要。どっちもか。
+
+            override fun onCancelled(error: DatabaseError) {
+
+            }
+        })
 
 
         playerName = intent.getStringExtra("playerName")
@@ -192,20 +217,55 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             insets
         }
 
+        //選択肢達のクリックリスナーの設定
         binding!!.answerBtn1.setOnClickListener(this)
         binding!!.answerBtn2.setOnClickListener(this)
         binding!!.answerBtn3.setOnClickListener(this)
         binding!!.answerBtn4.setOnClickListener(this)
 
+        //早押しボタンを押したときの処理
+        binding!!.pushBtn.setOnClickListener { v:View? ->
+            //isenabledtrue()
+            roomRef.child("buzz").setValue(myPlayerKey)
+        }
 
     }
 
     private var currentIndex = 0
     private var rightAnswer  = ""
 
+    private fun isenabledfalse()
+    {
+        binding!!.pushBtn.visibility = View.VISIBLE
+        binding!!.answerBtn1.visibility = View.INVISIBLE
+        binding!!.answerBtn2.visibility = View.INVISIBLE
+        binding!!.answerBtn3.visibility = View.INVISIBLE
+        binding!!.answerBtn4.visibility = View.INVISIBLE
+    }
+
+    private fun isenabledtrue()
+    {
+        binding!!.pushBtn.visibility = View.INVISIBLE
+        binding!!.answerBtn1.visibility = View.VISIBLE
+        binding!!.answerBtn2.visibility = View.VISIBLE
+        binding!!.answerBtn3.visibility = View.VISIBLE
+        binding!!.answerBtn4.visibility = View.VISIBLE
+    }
+
+    private fun allisenabledfalse()
+    {
+        binding!!.pushBtn.visibility = View.INVISIBLE
+        binding!!.answerBtn1.visibility = View.INVISIBLE
+        binding!!.answerBtn2.visibility = View.INVISIBLE
+        binding!!.answerBtn3.visibility = View.INVISIBLE
+        binding!!.answerBtn4.visibility = View.INVISIBLE
+    }
+
     private fun showNextQuiz()//早押しを作りたい。そのためには、wifiの問題をどうにかしないと
     {
         if (currentIndex >= quizList.size) return
+
+        isenabledfalse()
 
         binding!!.countLabel.text = getString(R.string.count_label, quizCount)
 
@@ -227,28 +287,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
         Log.d("question","ここまで来ていますよー")//呼ばれてない
     }
-
-    /*
-    private fun showNextQuiz() {
-        binding!!.countLabel.text = getString(R.string.count_label, quizCount)
-
-        val quiz = ArrayList(quizArray.removeAt(0))
-        binding!!.questionLabel.text = quiz[0]
-
-        rightAnswer = quiz[1]
-        quiz.removeAt(0)
-        quiz.removeAt(0)
-
-        quiz.add(rightAnswer)
-        Collections.shuffle(quiz)
-
-        binding!!.answerBtn1.text = quiz[0]
-        binding!!.answerBtn2.text = quiz[1]
-        binding!!.answerBtn3.text = quiz[2]
-        binding!!.answerBtn4.text = quiz[3]
-    }
-
-     */
 
 
     override fun onClick(v: View) {
