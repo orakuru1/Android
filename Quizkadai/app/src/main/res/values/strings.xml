@@ -5,8 +5,9 @@
     <string name="count_label">Q%d</string>
     <string name="btn_answer">選択肢</string>
 
-    <string name="result_title">結果</string>
-    <string name="result_score">10問中%d問正解</string>
-    <string name="result_total_score">トータルスコア : %d</string>
+    <string name="result_title">結果発表</string>
+    <string name="result_total_score">トータルスコア</string>
+    <string name="result_score">自分のスコア: 0</string>
+    <string name="result_opponent_score">相手のスコア: 0</string>
     <string name="btn_return">もどる</string>
 </resources>

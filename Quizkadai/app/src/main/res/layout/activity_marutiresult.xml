@@ -13,28 +13,32 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/result_title"
-        android:textSize="22sp" />
+        android:textSize="60sp" />
 
+    <!-- 自分のスコア -->
     <TextView
         android:id="@+id/resultLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="40dp"
         android:text="@string/result_score"
         android:textSize="30sp" />
 
+    <!-- 相手のスコア -->
     <TextView
-        android:id="@+id/totalScoreLabel"
+        android:id="@+id/opponentResultLabel"
         android:layout_width="wrap_content"
-        android:layout_height="70dp"
-        android:layout_marginTop="60dp"
-        android:text="@string/result_total_score"
-        android:textSize="20sp" />
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="@string/result_opponent_score"
+        android:textSize="30sp"
+        android:textsize="30sp" />
 
+    <!-- 戻るボタン -->
     <Button
         android:id="@+id/returnBtn"
         android:layout_width="177dp"
         android:layout_height="102dp"
-        android:layout_marginTop="80dp"
+        android:layout_marginTop="60dp"
         android:text="@string/btn_return" />
 </LinearLayout>
