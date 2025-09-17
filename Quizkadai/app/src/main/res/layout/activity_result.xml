@@ -4,7 +4,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#E4D553"
+    android:background="#F4D709"
     android:gravity="center"
     android:orientation="vertical"
     tools:context=".ResultActivity">
@@ -26,15 +26,15 @@
     <TextView
         android:id="@+id/totalScoreLabel"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="70dp"
         android:layout_marginTop="60dp"
         android:text="@string/result_total_score"
         android:textSize="20sp" />
 
     <Button
         android:id="@+id/returnBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="177dp"
+        android:layout_height="102dp"
         android:layout_marginTop="80dp"
         android:text="@string/btn_return" />
 </LinearLayout>
