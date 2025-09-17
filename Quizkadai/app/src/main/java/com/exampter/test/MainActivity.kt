@@ -15,6 +15,7 @@ import java.util.Collections
 import android.util.Log
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
 
 data class Quiz(
@@ -39,35 +40,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     val database = FirebaseDatabase.getInstance()
     val quizRef = database.getReference("quizness")
 
-
-    private val quizData = arrayOf(
-        arrayOf("「I’ll Kill You」と「I’ll Kill You」は彼の最も有名な曲です、メグミ。", "呪術廻戦", "長崎市", "福島市", "前橋市"),
-        arrayOf("走らないで、走らないで、走らないで。", "エヴァンゲリオン", "広島市", "甲府市", "岡山市"),
-        arrayOf("たとえ彼が邪魔をしたり、裏切ったり、私が世間知らずだと言ったとしても、私は彼を信じたかったのです！", "約束のネバーランド", "大分市", "秋田市", "福岡市"),
-        arrayOf("主人公の仕事は、人生という冒険の中で偉業を成し遂げることです。", "僕のヒーローアカデミア", "水戸市", "岐阜市", "福井市"),
-        arrayOf("私は二度逮捕されました。父は一度も私を叩いたことがありません!", "機動戦士ガンダム", "横浜市", "鳥取市", "仙台市"),
-        arrayOf("痩せたいならこれを食べなさい！！！", "バキ", "青森市", "山口市", "奈良市"),
-        arrayOf("質問に質問で答えないでください!!生徒たちに質問に質問で答えることを教えているのでしょうか?", "ジョジョの奇妙な冒険", "盛岡市", "新宿区", "京都市"),
-        arrayOf("生きるか死ぬかを他人に決めさせないでください!", "鬼滅の刃", "金沢市", "名古屋市", "奈良市"),
-        arrayOf("また会ったら友達と呼んでくれますか？", "ONE PIECE", "札幌市", "岡山市", "奈良市"),
-        arrayOf("包帯を巻いてくれてありがとう", "進撃の巨人", "福岡市", "松江市", "福井市"),
-        arrayOf("めっちゃ寒いです…！", "カイジ", "長崎市", "福島市", "前橋市"),
-        arrayOf("しかし、私のような凡人には下を向いている暇があるだろうか？", "ハイキュー!!", "広島市", "甲府市", "岡山市"),
-        arrayOf("不思議！ 「愛している」…知りたい", "ヴァイオレット・エヴァーガーデン", "大分市", "秋田市", "福岡市"),
-        arrayOf("これはジェッドアームストロングの上にニールアームストロングが乗っているのでしょうか？", "銀魂", "水戸市", "岐阜市", "福井市"),
-        arrayOf("止まったよ────止まれ！", "NARUTO -ナルト-", "横浜市", "鳥取市", "仙台市"),
-        arrayOf("立ち上がって、歩いて、前へ進みましょう。あなたの足は大丈夫です。", "鋼の錬金術師", "青森市", "山口市", "奈良市"),
-        arrayOf("彼は新世界の神となった。", "DEATH NOTE -デスノート-", "盛岡市", "新宿区", "京都市"),
-        arrayOf("君は死んだ！", "北斗の拳", "金沢市", "名古屋市", "奈良市"),
-        arrayOf("さて、これが最後です。頑張って下さい。", "HUNTER×HUNTER", "札幌市", "岡山市", "奈良市"),
-        arrayOf("十分な経験があれば、弱者でもエリートに勝つことができます。", "ドラゴンボール", "福岡市", "松江市", "福井市"),
-    )
-
-
-
-
+    private var alertTitle: String? = null
 
     private var playerName: String? = null
+
+    private lateinit var roomRef: DatabaseReference
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -81,7 +58,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         val myPlayerKey = intent.getStringExtra("myPlayerKey")
 
         val roomid = intent.getStringExtra("roomID")
-        val roomRef = database.getReference("room/$roomid")
+        roomRef = database.getReference("room/$roomid")
 
 
         //確か、一回は必ずやる処理だったと思う
@@ -194,12 +171,44 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                         allisenabledfalse()
                     }
                 }
-            }//他の人が正解したときどうなるのか、他の人が不正解だった時はどうなるのか。
+            }
+            //他の人が正解したときどうなるのか、他の人が不正解だった時はどうなるのか。
             //（正解）次の問題に二人とも変わって、ボタンだけ表示されてる状態になる
             //（不正解）その人の回答権は無くなって、もう一人の回答になるのか、ボタンを押すまでか、後者の場合は、タイム制限が必要。どっちもか。
 
             override fun onCancelled(error: DatabaseError) {
 
+            }
+        })
+
+        roomRef.child("answers").addValueEventListener(object : ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val answers1 = snapshot.child("player1").getValue(String::class.java)
+                val answers2 = snapshot.child("player2").getValue(String::class.java)
+
+                if (answers1 != null && answers2 != null)
+                {
+                    if (answers1 == "wrong" && answers2 == "wrong")
+                    {
+                        dialog()
+                    }
+                    roomRef.child("answers").setValue(null)
+                }
+                else if (answers1 == "allright")
+                {
+                    dialog()
+                    roomRef.child("answers").setValue(null)
+                }
+                else if (answers2 == "allright")
+                {
+                    dialog()
+                    roomRef.child("answers").setValue(null)
+                }
+
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.d("faker","誰が間違えたか、正解したか")
             }
         })
 
@@ -285,7 +294,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
         currentIndex ++
 
-        Log.d("question","ここまで来ていますよー")//呼ばれてない
     }
 
 
@@ -293,17 +301,29 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         val answerBtn = v as Button
         val btnText = answerBtn.text.toString()
 
-        val alertTitle: String
         if (btnText == rightAnswer) {
             alertTitle = "正解!"
             correctStreak++
             score += correctStreak
             rightAnswerCount++
+            roomRef.child("answers").child("")//二個下のプレイヤーかのどっちかをやろうと思ったが、どっちのプレイヤーに生後判定を入れるのかが、わからない
+            roomRef.child("buzz").setValue(null)
         } else {
             alertTitle = "不正解..."
             correctStreak = 0
+            roomRef.child("buzz").setValue(null)
         }
 
+        dialog()
+
+    }
+
+    companion object {
+        private const val QUIZ_COUNT = 10
+    }
+
+    private fun dialog()//誰かが正解、全員が不正解の時に表示したい
+    {
         MaterialAlertDialogBuilder(this)
             .setTitle(alertTitle)
             .setMessage("答え : $rightAnswer")
@@ -334,9 +354,5 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             }
             .setCancelable(false)
             .show()
-    }
-
-    companion object {
-        private const val QUIZ_COUNT = 10
     }
 }
