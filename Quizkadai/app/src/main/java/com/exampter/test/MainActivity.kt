@@ -66,6 +66,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         quizRef.addListenerForSingleValueEvent(object : ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
 
+                //二人いても、途中で一人が抜けたら、ルームがなくなってしまうのか？
+                //roomRef.onDisconnect().removeValue()  // ネット切断・アプリ強制終了時にも自動で削除
+
                 if("player1" == myPlayerKey)
                 {
                     //データベースにあるデータを読み込む
@@ -207,23 +210,25 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     //不正解だった時,選択権をなくして、相手側が答えるか、時間制限にする。
                     //間違えたほうが、選択肢がなくなって、相手側に移る方式とする。
                     roomRef.child("buzz").get().addOnSuccessListener { snapshot ->
-                        val buzz = snapshot.getValue(String::class.java)
+                        val buzz = snapshot.getValue(String::class.java)//ダイアログのOKを押さないと次に進まないようにしないといけない。
 
-                        if (myPlayerKey == buzz)
+                        if (buzz != null)
                         {
-                            //押した人の選択肢と早押しボタンが消える。
-                            allisenabledfalse()
-                        }
-                        else
-                        {
-                            //誰かが間違えたら、強制的に他の人が解答になる。
-                            isenabledtrue()
+                            if (myPlayerKey == buzz)
+                            {
+                                //押した人の選択肢と早押しボタンが消える。
+                                allisenabledfalse()
+                            }
+                            else
+                            {
+                                //誰かが間違えたら、強制的に他の人が解答になる。
+                                isenabledtrue()
+                            }
                         }
 
                         //不正解の時は、必ずここに来るのか？
                         roomRef.child("buzz").setValue(null)
                     }
-
 
                 }
 
@@ -231,6 +236,49 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
             override fun onCancelled(error: DatabaseError) {
                 Log.d("faker","誰が間違えたか、正解したか")
+            }
+        })
+
+        roomRef.child("okPressed").addValueEventListener(object :ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val player1Pressed = snapshot.child("player1").getValue(Boolean::class.java) ?: false
+                val player2Pressed = snapshot.child("player2").getValue(Boolean::class.java) ?: false
+
+                //////////////////////////////////////////////////////////////////////////////////////////////////
+                ///クイズカウントが１０に達成して、リザルトに移動するときの処理をどうするか？
+                if (quizCount == QUIZ_COUNT) {
+                    val prefs = getSharedPreferences("QuizPrefs", MODE_PRIVATE)
+                    val editor = prefs.edit()
+                    var totalScore = prefs.getInt(playerName + "_total_score", 0)
+                    totalScore += score
+                    editor.putInt(playerName + "_total_score", totalScore)
+                    editor.apply()
+
+                    val intent = Intent(
+                        this@MainActivity,
+                        activity_marutiresult::class.java
+                    )
+                    intent.putExtra("RIGHT_ANSWER_COUNT", rightAnswerCount)
+                    intent.putExtra("SCORE", score)
+                    intent.putExtra("playerName", playerName)
+                    startActivity(intent)
+                    finish()
+                }
+                ///////////////////////////////////////////////////////////////////////////////////////////////////
+
+                //ダイアログの部分に解説を載せるなどの、気になっているうちに、勉強できるなどの利点をつぎ込むことが可能。
+                if (player1Pressed && player2Pressed)
+                {
+                    // 両方押したので次の問題へ
+                    snapshot.ref.setValue(null) // リセット
+                    quizCount++
+                    showNextQuiz()
+                }
+
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+
             }
         })
 
@@ -264,6 +312,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
     private var currentIndex = 0
     private var rightAnswer  = ""
+
+
+    private fun onDialogOkPressed() {
+        roomRef.child("okPressed").child(myPlayerKey).setValue(true)
+    }
 
     //早押しボタン以外のボタンを非表示にする
     private fun isenabledfalse()
@@ -299,10 +352,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     {
         if (currentIndex >= quizList.size) return
 
+        Log.d("shownextquiz","あああああああああああああああああああああああああああああああああ")
         isenabledfalse()
 
+        //問題番号
         binding!!.countLabel.text = getString(R.string.count_label, quizCount)
 
+        //クイズ取り出し
         val quiz = quizList[currentIndex]
         binding!!.questionLabel.text = quiz.question
         rightAnswer = quiz.answer
@@ -356,27 +412,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             .setPositiveButton(
                 "OK"
             ) { dialogInterface, i ->
-                if (quizCount == QUIZ_COUNT) {
-                    val prefs = getSharedPreferences("QuizPrefs", MODE_PRIVATE)
-                    val editor = prefs.edit()
-                    var totalScore = prefs.getInt(playerName + "_total_score", 0)
-                    totalScore += score
-                    editor.putInt(playerName + "_total_score", totalScore)
-                    editor.apply()
-
-                    val intent = Intent(
-                        this@MainActivity,
-                        activity_marutiresult::class.java
-                    )
-                    intent.putExtra("RIGHT_ANSWER_COUNT", rightAnswerCount)
-                    intent.putExtra("SCORE", score)
-                    intent.putExtra("playerName", playerName)
-                    startActivity(intent)
-                    finish()
-                } else {
-                    quizCount++
-                    showNextQuiz()
-                }
+                //dialogのOKボタンを押したら
+                onDialogOkPressed()
             }
             .setCancelable(false)
             .show()

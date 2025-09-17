@@ -31,8 +31,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:text="@string/result_opponent_score"
-        android:textSize="30sp"
-        android:textsize="30sp" />
+        android:textSize="30sp" />
 
     <!-- 戻るボタン -->
     <Button
