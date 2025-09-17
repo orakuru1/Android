@@ -4,9 +4,10 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ResultActivity"
+    android:background="#E4D553"
+    android:gravity="center"
     android:orientation="vertical"
-    android:gravity="center">
+    tools:context=".ResultActivity">
 
     <TextView
         android:layout_width="wrap_content"
@@ -18,22 +19,22 @@
         android:id="@+id/resultLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="60dp"
         android:text="@string/result_score"
-        android:textSize="30sp"
-        android:layout_marginTop="60dp" />
+        android:textSize="30sp" />
 
     <TextView
         android:id="@+id/totalScoreLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="60dp"
         android:text="@string/result_total_score"
-        android:textSize="20sp"
-        android:layout_marginTop="60dp" />
+        android:textSize="20sp" />
 
     <Button
         android:id="@+id/returnBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/btn_return"
-        android:layout_marginTop="80dp" />
+        android:layout_marginTop="80dp"
+        android:text="@string/btn_return" />
 </LinearLayout>
