@@ -305,16 +305,17 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             alertTitle = "正解!"
             correctStreak++
             score += correctStreak
-            rightAnswerCount++
-            roomRef.child("answers").child("")//二個下のプレイヤーかのどっちかをやろうと思ったが、どっちのプレイヤーに生後判定を入れるのかが、わからない
-            roomRef.child("buzz").setValue(null)
+            rightAnswerCount++//勝敗どうやってつけよう。（スコア、時間制限、）
+            roomRef.child("answers").child("correct")//二個下のプレイヤーかのどっちかをやろうと思ったが、どっちのプレイヤーに生後判定を入れるのかが、わからない
+            roomRef.child("buzz").setValue(null)//自動的に終わったルームを消す処理も作らないと。
         } else {
             alertTitle = "不正解..."
             correctStreak = 0
+            roomRef.child("answers").child("wrong")
             roomRef.child("buzz").setValue(null)
         }
 
-        dialog()
+        //dialog()
 
     }
 
