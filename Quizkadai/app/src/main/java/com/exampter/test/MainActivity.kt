@@ -50,7 +50,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
     private val TOTAL_TIME = 30_000L    //30秒（ミリ単位）
 
-    private var CountDownTimer:CountDownTimer? = null
+    private var countdowntimer:CountDownTimer? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -338,9 +338,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     //カウントダウンのスタート
     private fun startCountdown(remainingTime:Long)
     {
-        CountDownTimer?.cancel()
-        
-        object : CountDownTimer(remainingTime, 1000)
+        //古いタイマーを止める
+        countdowntimer?.cancel()
+
+        countdowntimer = object : CountDownTimer(remainingTime, 1000)
         {
             override fun onTick(millisUntilFinished: Long) {
                 binding!!.timerLabel.text = "${millisUntilFinished / 1000}　秒"
