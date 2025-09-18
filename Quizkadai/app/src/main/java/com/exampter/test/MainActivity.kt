@@ -338,6 +338,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     //カウントダウンのスタート
     private fun startCountdown(remainingTime:Long)
     {
+        CountDownTimer?.cancel()
+        
         object : CountDownTimer(remainingTime, 1000)
         {
             override fun onTick(millisUntilFinished: Long) {
@@ -384,8 +386,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     {
         if (currentIndex >= quizList.size) return
 
-        CountDownTimer?.cancel()
-        
         isenabledfalse()
 
         //問題番号
