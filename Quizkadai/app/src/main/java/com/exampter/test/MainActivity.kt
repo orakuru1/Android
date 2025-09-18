@@ -528,6 +528,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             alertTitle = "不正解..."
             correctStreak = 0
             roomRef.child("answers").child(myPlayerKey).setValue("wrong")
+            buzzTimer?.cancel()
             //playerの下にanswersを作ることに成功した。まだ、ボタンは反応しない。
             //answersを変えたときにちゃんと呼ばれているのかの確認と、間違えたときは、強制的に相手に回答権が映るようにするか？
         }
