@@ -1,6 +1,7 @@
 package com.exampter.test
 
 import android.content.Intent
+import android.media.MediaPlayer
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.enableEdgeToEdge
@@ -14,6 +15,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 
 class Serching : AppCompatActivity() {
+    private var bgmPlayer: MediaPlayer? = null //bgm用のプレイヤー
 
     private lateinit var roomRef: DatabaseReference
     private var myPlayerKey = ""
@@ -22,6 +24,11 @@ class Serching : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_serching)
+
+        //bgm再生の準備
+        bgmPlayer = MediaPlayer.create(this, R.raw.road)
+        bgmPlayer?.isLooping = true //ループ再生
+        bgmPlayer?.start()
 
         //前から送ってきたものを習得
         val playerName = intent.getStringExtra("playerName") ?: "ゲスト"
@@ -68,5 +75,31 @@ class Serching : AppCompatActivity() {
 
             }
         }
+    }
+
+    override fun onPause()
+    {
+        super.onPause()
+        //画面を離れたら音を止める
+        if(bgmPlayer?.isPlaying == true)
+        {
+            bgmPlayer?.pause()
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        //戻ってきたら音を再開
+        if(bgmPlayer?.isPlaying == false)
+        {
+            bgmPlayer?.start()
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        //リソース解放
+        bgmPlayer?.release()
+        bgmPlayer = null
     }
 }
