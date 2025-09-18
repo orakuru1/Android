@@ -66,9 +66,14 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         quizRef.addListenerForSingleValueEvent(object : ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
 
-                //二人いても、途中で一人が抜けたら、ルームがなくなってしまうのか？
-                //roomRef.onDisconnect().removeValue()  // ネット切断・アプリ強制終了時にも自動で削除
-
+                //二人いても、途中で一人が抜けたら、ルームがなくなってしまうのか？---------------------------------------------------
+                //roomRef.child(myPlayerKey).onDisconnect().removeValue()  // ネット切断・アプリ強制終了時にも自動で削除
+                ////////<<<<<<<<<<<<<<<<やること>>>>>>>>>>>>>>>>>>>>>>>>
+                //制限時間を付ける、１問当たりの時間、早押しボタンを押してからの時間。UIもあるとよい
+                //最後にスコアを表示する、どっちが勝ったかの勝敗を付ける。
+                //タイトル画面に戻り、もう一度できるようにする
+                //個人個人のプロフィールを設定させ、終わっても、また、戻ってくるようにする。
+                //一人が抜けたら、対戦相手が抜けました。と試合を終わらせて、タイトルに戻るようにする。
                 if("player1" == myPlayerKey)
                 {
                     //データベースにあるデータを読み込む
@@ -187,6 +192,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             }
         })
 
+        //解答したか
         roomRef.child("answers").addValueEventListener(object : ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
                 val answers1 = snapshot.child("player1").getValue(String::class.java)
@@ -198,12 +204,16 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     //answrsは１問が終わるごとにリセットする。
                     roomRef.child("answers").setValue(null)
                     roomRef.child("answers").setValue(null)
+                    //これで、ダイアログの下の選択肢が非表示になったかな
+                    allisenabledfalse()
                 }
                 else if (answers1 == "correct" || answers2 == "correct")
                 {
                     dialog()
                     roomRef.child("answers").setValue(null)
                     roomRef.child("answers").setValue(null)
+                    //これで、ダイアログの下の選択肢が非表示になったかな
+                    allisenabledfalse()
                 }
                 else
                 {
@@ -239,14 +249,14 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             }
         })
 
+        //ダイアログのOKボタンを押したか
         roomRef.child("okPressed").addValueEventListener(object :ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
                 val player1Pressed = snapshot.child("player1").getValue(Boolean::class.java) ?: false
                 val player2Pressed = snapshot.child("player2").getValue(Boolean::class.java) ?: false
 
-                //////////////////////////////////////////////////////////////////////////////////////////////////
-                ///クイズカウントが１０に達成して、リザルトに移動するときの処理をどうするか？
                 if (quizCount == QUIZ_COUNT) {
+                    //ここで軽いファイルを宣言している。そして、データを保存している。
                     val prefs = getSharedPreferences("QuizPrefs", MODE_PRIVATE)
                     val editor = prefs.edit()
                     var totalScore = prefs.getInt(playerName + "_total_score", 0)
@@ -264,7 +274,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     startActivity(intent)
                     finish()
                 }
-                ///////////////////////////////////////////////////////////////////////////////////////////////////
 
                 //ダイアログの部分に解説を載せるなどの、気になっているうちに、勉強できるなどの利点をつぎ込むことが可能。
                 if (player1Pressed && player2Pressed)

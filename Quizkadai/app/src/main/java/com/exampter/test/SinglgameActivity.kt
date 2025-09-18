@@ -9,12 +9,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.exampter.test.databinding.ActivityMainBinding
+import com.exampter.test.databinding.ActivitySinglgameBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.database.FirebaseDatabase
 import java.util.Collections
 
 class SinglgameActivity : AppCompatActivity(), View.OnClickListener {
-    private var binding: ActivityMainBinding? = null
+    private var binding: ActivitySinglgameBinding? = null
 
     private var rightAnswerCount = 0
     private var quizCount = 1
@@ -55,19 +56,8 @@ class SinglgameActivity : AppCompatActivity(), View.OnClickListener {
         super.onCreate(savedInstanceState)
 
         this.enableEdgeToEdge()
-        binding = ActivityMainBinding.inflate(layoutInflater)
+        binding = ActivitySinglgameBinding.inflate(layoutInflater)
         setContentView(binding!!.root)
-
-        val database = FirebaseDatabase.getInstance()
-        val roomRef = database.getReference("rooms/room12345/player1")
-
-        val playerData = mapOf(
-            "name" to "sfdas",
-            "ready" to "safwea",
-            "score" to 4
-        )
-
-        roomRef.setValue(playerData)
 
         playerName = intent.getStringExtra("playerName")
         if (playerName == null) playerName = "ゲスト"
