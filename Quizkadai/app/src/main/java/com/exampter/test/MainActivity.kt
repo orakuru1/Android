@@ -1,7 +1,9 @@
 package com.exampter.test
 
 import android.content.Intent
+import android.media.AudioAttributes
 import android.media.MediaPlayer
+import android.media.SoundPool
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.view.View
@@ -28,6 +30,8 @@ data class Quiz(
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
     private var bgmPlayer: MediaPlayer? = null //bgm用のプレイヤー
+    private lateinit var soundPool: SoundPool //効果音用
+    private var soundId: Int = 0              //効果音ID
     private var binding: ActivityMainBinding? = null
 
     private var rightAnswerCount = 0
@@ -65,6 +69,19 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         bgmPlayer = MediaPlayer.create(this, R.raw.monndai)
         bgmPlayer?.isLooping = true //ループ再生
         bgmPlayer?.start()
+
+        //効果音の準備
+        val audioAttributes = AudioAttributes.Builder()
+            .setUsage(AudioAttributes.USAGE_GAME)
+            .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+            .build()
+
+        soundPool = SoundPool.Builder()
+            .setMaxStreams(1)
+            .setAudioAttributes(audioAttributes)
+            .build()
+
+        soundId = soundPool.load(this, R.raw.buttn, 1) //se再生
 
         this.enableEdgeToEdge()
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -334,6 +351,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
         //早押しボタンを押したときの処理
         binding!!.pushBtn.setOnClickListener { v:View? ->
+            //効果音を鳴らす
+            soundPool.play(soundId, 1f, 1f, 0, 0, 1f)
             //isenabledtrue()
             startBuzzTimer()
             roomRef.child("buzz").setValue(myPlayerKey)
@@ -488,6 +507,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
 
     override fun onClick(v: View) {
+        //効果音を鳴らす
+        soundPool.play(soundId, 1f, 1f, 0, 0, 1f)
         val answerBtn = v as Button
         val btnText = answerBtn.text.toString()
 
@@ -553,6 +574,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         //リソース開放
         bgmPlayer?.release()
         bgmPlayer = null
+
+        soundPool.release()
     }
 
 }
