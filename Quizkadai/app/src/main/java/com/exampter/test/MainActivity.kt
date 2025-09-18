@@ -1,6 +1,7 @@
 package com.exampter.test
 
 import android.content.Intent
+import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.view.View
@@ -26,6 +27,7 @@ data class Quiz(
 )
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
+    private var bgmPlayer: MediaPlayer? = null //bgm用のプレイヤー
     private var binding: ActivityMainBinding? = null
 
     private var rightAnswerCount = 0
@@ -54,6 +56,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        //bgm再生の準備
+        bgmPlayer = MediaPlayer.create(this, R.raw.monndai)
+        bgmPlayer?.isLooping = true //ループ再生
+        bgmPlayer?.start()
 
         this.enableEdgeToEdge()
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -474,4 +481,32 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             .setCancelable(false)
             .show()
     }
+
+    override fun onPause()
+    {
+        super.onPause()
+        //画面を離れたら音を止める
+        if(bgmPlayer?.isPlaying == true)
+        {
+            bgmPlayer?.pause()
+        }
+    }
+
+    override fun onResume()
+    {
+        super.onResume()
+        //戻ってきたら音を再開
+        if(bgmPlayer?.isPlaying == false)
+        {
+            bgmPlayer?.start()
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        //リソース開放
+        bgmPlayer?.release()
+        bgmPlayer = null
+    }
+
 }
