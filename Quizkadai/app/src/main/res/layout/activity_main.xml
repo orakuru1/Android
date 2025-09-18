@@ -1,83 +1,114 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <!-- タイマーを左上に固定 -->
+    <!-- 左上の全体タイマー -->
     <TextView
         android:id="@+id/timerLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="60"
+        android:text="30 秒"
         android:textSize="22sp"
         android:layout_margin="16dp"
-        android:gravity="start|top" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
 
-    <!-- 他のUIは縦に並べる -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:gravity="center">
+    <!-- 右上の早押しタイマー -->
+    <TextView
+        android:id="@+id/buzzTimerLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="---"
+        android:textSize="22sp"
+        android:layout_margin="16dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
-        <TextView
-            android:id="@+id/countLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/count_label"
-            android:textSize="22sp" />
+    <!-- 問題番号 -->
+    <TextView
+        android:id="@+id/countLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="第1問"
+        android:textSize="22sp"
+        app:layout_constraintTop_toBottomOf="@id/timerLabel"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="40dp"/>
 
-        <TextView
-            android:id="@+id/questionLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="60dp"
-            android:text="@string/question_label"
-            android:textSize="24sp" />
+    <!-- 問題文 -->
+    <TextView
+        android:id="@+id/questionLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="問題文が入ります"
+        android:textSize="24sp"
+        app:layout_constraintTop_toBottomOf="@id/countLabel"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="40dp"/>
 
-        <Button
-            android:id="@+id/answerBtn1"
-            style="@style/Widget.Material3.Button.OutlinedButton"
-            android:layout_width="300dp"
-            android:layout_height="60dp"
-            android:layout_marginTop="80dp"
-            android:text="@string/btn_answer" />
+    <!-- 選択肢ボタンたち -->
+    <Button
+        android:id="@+id/answerBtn1"
+        style="@style/Widget.Material3.Button.OutlinedButton"
+        android:layout_width="300dp"
+        android:layout_height="60dp"
+        android:text="選択肢1"
+        app:layout_constraintTop_toBottomOf="@id/questionLabel"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="60dp"/>
 
-        <Button
-            android:id="@+id/answerBtn2"
-            style="@style/Widget.Material3.Button.OutlinedButton"
-            android:layout_width="300dp"
-            android:layout_height="60dp"
-            android:layout_marginTop="6dp"
-            android:text="@string/btn_answer" />
+    <Button
+        android:id="@+id/answerBtn2"
+        style="@style/Widget.Material3.Button.OutlinedButton"
+        android:layout_width="300dp"
+        android:layout_height="60dp"
+        android:text="選択肢2"
+        app:layout_constraintTop_toBottomOf="@id/answerBtn1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="8dp"/>
 
-        <Button
-            android:id="@+id/answerBtn3"
-            style="@style/Widget.Material3.Button.OutlinedButton"
-            android:layout_width="300dp"
-            android:layout_height="60dp"
-            android:layout_marginTop="6dp"
-            android:text="@string/btn_answer" />
+    <Button
+        android:id="@+id/answerBtn3"
+        style="@style/Widget.Material3.Button.OutlinedButton"
+        android:layout_width="300dp"
+        android:layout_height="60dp"
+        android:text="選択肢3"
+        app:layout_constraintTop_toBottomOf="@id/answerBtn2"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="8dp"/>
 
-        <Button
-            android:id="@+id/answerBtn4"
-            style="@style/Widget.Material3.Button.OutlinedButton"
-            android:layout_width="300dp"
-            android:layout_height="60dp"
-            android:layout_marginTop="6dp"
-            android:text="@string/btn_answer" />
+    <Button
+        android:id="@+id/answerBtn4"
+        style="@style/Widget.Material3.Button.OutlinedButton"
+        android:layout_width="300dp"
+        android:layout_height="60dp"
+        android:text="選択肢4"
+        app:layout_constraintTop_toBottomOf="@id/answerBtn3"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="8dp"/>
 
-        <Button
-            android:id="@+id/pushBtn"
-            style="@style/Widget.Material3.Button.OutlinedButton"
-            android:layout_width="283dp"
-            android:layout_height="109dp"
-            android:text="ボタン"
-            android:layout_marginTop="20dp" />
+    <!-- 早押しボタン -->
+    <Button
+        android:id="@+id/pushBtn"
+        style="@style/Widget.Material3.Button.OutlinedButton"
+        android:layout_width="283dp"
+        android:layout_height="109dp"
+        android:text="早押し"
+        app:layout_constraintTop_toBottomOf="@id/answerBtn4"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="20dp"/>
 
-    </LinearLayout>
-
-</FrameLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

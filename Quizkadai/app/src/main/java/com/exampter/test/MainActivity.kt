@@ -55,6 +55,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     private var countdowntimer:CountDownTimer? = null
     private var stoptime: Long = TOTAL_TIME
 
+    private var buzzTimer: CountDownTimer? = null
+    private val BUZZ_TIME = 5_000L // 5秒（例）
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -80,7 +83,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             override fun onDataChange(snapshot: DataSnapshot) {
 
                 //二人いても、途中で一人が抜けたら、ルームがなくなってしまうのか？---------------------------------------------------
-                roomRef.child(myPlayerKey).onDisconnect().removeValue()  // ネット切断・アプリ強制終了時にも自動で削除
+                //roomRef.child(myPlayerKey).onDisconnect().removeValue()  // ネット切断・アプリ強制終了時にも自動で削除
                 ////////<<<<<<<<<<<<<<<<やること>>>>>>>>>>>>>>>>>>>>>>>>
                 //制限時間を付ける、１問当たりの時間、早押しボタンを押してからの時間。UIもあるとよい
                 //最後にスコアを表示する、どっちが勝ったかの勝敗を付ける。
@@ -248,7 +251,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                             else
                             {
                                 //誰かが間違えたら、強制的に他の人が解答になる。
-                                isenabledtrue()
+                                isenabledfalse()
                                 resumeCountdown()
                             }
                         }
@@ -332,6 +335,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         //早押しボタンを押したときの処理
         binding!!.pushBtn.setOnClickListener { v:View? ->
             //isenabledtrue()
+            startBuzzTimer()
             roomRef.child("buzz").setValue(myPlayerKey)
         }
 
@@ -368,6 +372,24 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 roomRef.child("answers").child(myPlayerKey).setValue("wrong")
                 dialog()
 
+            }
+        }.start()
+    }
+
+    private fun startBuzzTimer()
+    {
+        buzzTimer?.cancel()
+        buzzTimer = object : CountDownTimer(BUZZ_TIME, 1000)
+        {
+            override fun onTick(millisUntilFinished: Long) {
+                binding!!.buzzTimerLabel.text = "${millisUntilFinished / 1000}秒"
+            }
+
+            override fun onFinish() {
+                alertTitle = "時間切れ.."
+                correctStreak = 0
+                roomRef.child("answers").child(myPlayerKey).setValue("wrong")
+                dialog()
             }
         }.start()
     }
