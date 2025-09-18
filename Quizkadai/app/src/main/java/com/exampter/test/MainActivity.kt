@@ -274,7 +274,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                                 //誰かが間違えたら、強制的に他の人が解答になる。
                                 isenabledfalse()
                                 resumeCountdown()
-                                startBuzzTimer()
                             }
                         }
 
