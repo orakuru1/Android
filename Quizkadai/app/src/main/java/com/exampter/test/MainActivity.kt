@@ -100,7 +100,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             override fun onDataChange(snapshot: DataSnapshot) {
 
                 //二人いても、途中で一人が抜けたら、ルームがなくなってしまうのか？---------------------------------------------------
-                //roomRef.child(myPlayerKey).onDisconnect().removeValue()  // ネット切断・アプリ強制終了時にも自動で削除
+                roomRef.child(myPlayerKey).onDisconnect().removeValue()  // ネット切断・アプリ強制終了時にも自動で削除
                 roomRef.child("answers").onDisconnect().removeValue()
                 roomRef.child("okPressed").onDisconnect().removeValue()
                 ////////<<<<<<<<<<<<<<<<やること>>>>>>>>>>>>>>>>>>>>>>>>
@@ -236,6 +236,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 val answers1 = snapshot.child("player1").getValue(String::class.java)
                 val answers2 = snapshot.child("player2").getValue(String::class.java)
 
+                Log.d("answers", "あんさーが呼ばれた")
+
+
                 if (answers1 == "wrong" && answers2 == "wrong")//二人とも不正解
                 {
                     dialog()
@@ -265,12 +268,14 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                         {
                             if (myPlayerKey == buzz)
                             {
+                                Log.d("buzz","クイズに間違えた本人")
                                 //押した人の選択肢と早押しボタンが消える。
                                 allisenabledfalse()
                                 buzzTimer?.cancel()
                             }
                             else
                             {
+                                Log.d("buzz","相手がクイズに間違えた")
                                 //誰かが間違えたら、強制的に他の人が解答になる。
                                 isenabledfalse()
                                 resumeCountdown()
