@@ -51,6 +51,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     private val TOTAL_TIME = 30_000L    //30秒（ミリ単位）
 
     private var countdowntimer:CountDownTimer? = null
+    private var stoptime: Long = TOTAL_TIME
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,7 +73,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             override fun onDataChange(snapshot: DataSnapshot) {
 
                 //二人いても、途中で一人が抜けたら、ルームがなくなってしまうのか？---------------------------------------------------
-                //roomRef.child(myPlayerKey).onDisconnect().removeValue()  // ネット切断・アプリ強制終了時にも自動で削除
+                roomRef.child(myPlayerKey).onDisconnect().removeValue()  // ネット切断・アプリ強制終了時にも自動で削除
                 ////////<<<<<<<<<<<<<<<<やること>>>>>>>>>>>>>>>>>>>>>>>>
                 //制限時間を付ける、１問当たりの時間、早押しボタンを押してからの時間。UIもあるとよい
                 //最後にスコアを表示する、どっちが勝ったかの勝敗を付ける。
@@ -178,6 +179,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 Log.d("buzz","buzzのイベントが呼ばれたよー")
                 if (whoBuzzed != null)
                 {
+                    pauseCountdown()
                     if (whoBuzzed == myPlayerKey)
                     {
                         //自分が押したとき
@@ -240,6 +242,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                             {
                                 //誰かが間違えたら、強制的に他の人が解答になる。
                                 isenabledtrue()
+                                resumeCountdown()
                             }
                         }
 
@@ -327,6 +330,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
     }
 
+    ////////////////////////////////////////////////////////////////////
+    //ここから関数たち
+
     private var currentIndex = 0
     private var rightAnswer  = ""
 
@@ -344,13 +350,31 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         countdowntimer = object : CountDownTimer(remainingTime, 1000)
         {
             override fun onTick(millisUntilFinished: Long) {
+                stoptime = millisUntilFinished
                 binding!!.timerLabel.text = "${millisUntilFinished / 1000}　秒"
             }
 
             override fun onFinish() {
                 //タイムアップ処理
+                alertTitle = "時間切れ.."
+                correctStreak = 0
+                roomRef.child("answers").child(myPlayerKey).setValue("wrong")
+                dialog()
+
             }
         }.start()
+    }
+
+    //タイマーを止めるよう
+    private fun pauseCountdown()
+    {
+        countdowntimer?.cancel()
+    }
+
+    //止まった時間を動かす
+    private fun resumeCountdown()
+    {
+        startCountdown(stoptime)
     }
 
     //早押しボタン以外のボタンを非表示にする
