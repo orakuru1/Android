@@ -394,6 +394,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 alertTitle = "時間切れ.."
                 correctStreak = 0
                 roomRef.child("answers").child(myPlayerKey).setValue("wrong")
+                buzzTimer?.cancel()
 
             }
         }.start()
@@ -413,6 +414,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 alertTitle = "時間切れ.."
                 correctStreak = 0
                 roomRef.child("answers").child(myPlayerKey).setValue("wrong")
+                buzzTimer?.cancel()
             }
         }.start()
     }
