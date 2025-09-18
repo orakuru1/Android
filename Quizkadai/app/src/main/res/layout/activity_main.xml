@@ -1,67 +1,83 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity"
-    android:orientation="vertical"
-    android:gravity="center">
+    tools:context=".MainActivity">
 
+    <!-- タイマーを左上に固定 -->
     <TextView
-        android:id="@+id/countLabel"
+        android:id="@+id/timerLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/count_label"
-        android:textSize="22sp" />
-    <TextView
-        android:id="@+id/questionLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/question_label"
-        android:textSize="24sp"
-        android:layout_marginTop="60dp" />
+        android:text="60"
+        android:textSize="22sp"
+        android:layout_margin="16dp"
+        android:gravity="start|top" />
 
+    <!-- 他のUIは縦に並べる -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center">
 
-    <Button
-        android:id="@+id/answerBtn1"
-        style="@style/Widget.Material3.Button.OutlinedButton"
-        android:layout_width="300dp"
-        android:layout_height="60dp"
-        android:layout_marginTop="80dp"
-        android:text="@string/btn_answer"
-        tools:ignore="DuplicateSpeakableTextCheck" />
+        <TextView
+            android:id="@+id/countLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/count_label"
+            android:textSize="22sp" />
 
-    <Button
-        android:id="@+id/answerBtn2"
-        android:layout_width="300dp"
-        android:layout_height="60dp"
-        android:text="@string/btn_answer"
-        android:layout_marginTop="6dp"
-        style="@style/Widget.Material3.Button.OutlinedButton" />
+        <TextView
+            android:id="@+id/questionLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="60dp"
+            android:text="@string/question_label"
+            android:textSize="24sp" />
 
-    <Button
-        android:id="@+id/answerBtn3"
-        style="@style/Widget.Material3.Button.OutlinedButton"
-        android:layout_width="300dp"
-        android:layout_height="60dp"
-        android:layout_marginTop="6dp"
-        android:text="@string/btn_answer" />
+        <Button
+            android:id="@+id/answerBtn1"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="300dp"
+            android:layout_height="60dp"
+            android:layout_marginTop="80dp"
+            android:text="@string/btn_answer" />
 
-    <Button
-        android:id="@+id/answerBtn4"
-        android:layout_width="300dp"
-        android:layout_height="60dp"
-        android:text="@string/btn_answer"
-        android:layout_marginTop="6dp"
-        style="@style/Widget.Material3.Button.OutlinedButton" />
+        <Button
+            android:id="@+id/answerBtn2"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="300dp"
+            android:layout_height="60dp"
+            android:layout_marginTop="6dp"
+            android:text="@string/btn_answer" />
 
-    <Button
-        android:id="@+id/pushBtn"
-        android:layout_width="283dp"
-        android:layout_height="109dp"
-        style="@style/Widget.Material3.Button.OutlinedButton"
-        android:text="ボタン" />
+        <Button
+            android:id="@+id/answerBtn3"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="300dp"
+            android:layout_height="60dp"
+            android:layout_marginTop="6dp"
+            android:text="@string/btn_answer" />
 
-</LinearLayout>
+        <Button
+            android:id="@+id/answerBtn4"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="300dp"
+            android:layout_height="60dp"
+            android:layout_marginTop="6dp"
+            android:text="@string/btn_answer" />
+
+        <Button
+            android:id="@+id/pushBtn"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="283dp"
+            android:layout_height="109dp"
+            android:text="ボタン"
+            android:layout_marginTop="20dp" />
+
+    </LinearLayout>
+
+</FrameLayout>

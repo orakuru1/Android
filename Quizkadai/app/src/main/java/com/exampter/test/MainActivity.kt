@@ -2,6 +2,7 @@ package com.exampter.test
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.view.View
 import android.widget.Button
 import androidx.activity.enableEdgeToEdge
@@ -47,6 +48,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var roomRef: DatabaseReference
     private lateinit var myPlayerKey: String
 
+    private val TOTAL_TIME = 30_000L    //30秒（ミリ単位）
+
+    private var CountDownTimer:CountDownTimer? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -62,7 +67,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         roomRef = database.getReference("room/$roomid")
 
 
-        //確か、一回は必ずやる処理だったと思う
+        //その時点での値を習得して、リスナー解除
         quizRef.addListenerForSingleValueEvent(object : ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
 
@@ -109,6 +114,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
                     // 上書き保存
                     roomRef.child("ShullQuizList").setValue(updateMap)
+
                 }
 
                 //問題文を取り込んで、シャッフルできたかの確認
@@ -164,6 +170,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             })
         }
 
+        //早押しボタンを押した人
         roomRef.child("buzz").addValueEventListener(object : ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
                 val whoBuzzed  = snapshot.getValue(String::class.java)
@@ -281,6 +288,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     // 両方押したので次の問題へ
                     snapshot.ref.setValue(null) // リセット
                     quizCount++
+
                     showNextQuiz()
                 }
 
@@ -322,9 +330,24 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     private var currentIndex = 0
     private var rightAnswer  = ""
 
-
+    //okボタンを押したことを知らせる
     private fun onDialogOkPressed() {
         roomRef.child("okPressed").child(myPlayerKey).setValue(true)
+    }
+
+    //カウントダウンのスタート
+    private fun startCountdown(remainingTime:Long)
+    {
+        object : CountDownTimer(remainingTime, 1000)
+        {
+            override fun onTick(millisUntilFinished: Long) {
+                binding!!.timerLabel.text = "${millisUntilFinished / 1000}　秒"
+            }
+
+            override fun onFinish() {
+                //タイムアップ処理
+            }
+        }.start()
     }
 
     //早押しボタン以外のボタンを非表示にする
@@ -361,7 +384,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     {
         if (currentIndex >= quizList.size) return
 
-        Log.d("shownextquiz","あああああああああああああああああああああああああああああああああ")
+        CountDownTimer?.cancel()
+        
         isenabledfalse()
 
         //問題番号
@@ -383,6 +407,28 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         binding!!.answerBtn4.text = options[3]
 
         currentIndex ++
+
+        if (myPlayerKey == "player1")
+        {
+            val startTime = System.currentTimeMillis()
+            roomRef.child("startTime").setValue(startTime)
+        }
+
+        //データベースにある、基準時間を習得
+        roomRef.child("startTime").addListenerForSingleValueEvent(object :ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val startTime = snapshot.getValue(Long::class.java) ?:return
+                val now = System.currentTimeMillis()
+                val elapsed = now - startTime //どのくらい遅れて受け取ったか
+
+                val remainingTime = TOTAL_TIME - elapsed
+                startCountdown(remainingTime)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+
+            }
+        })
 
     }
 
