@@ -394,7 +394,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 alertTitle = "時間切れ.."
                 correctStreak = 0
                 roomRef.child("answers").child(myPlayerKey).setValue("wrong")
-                dialog()
 
             }
         }.start()
@@ -414,7 +413,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 alertTitle = "時間切れ.."
                 correctStreak = 0
                 roomRef.child("answers").child(myPlayerKey).setValue("wrong")
-                dialog()
             }
         }.start()
     }
@@ -467,6 +465,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
         isenabledfalse()
 
+        binding!!.buzzTimerLabel.text = "--秒"
+
         //問題番号
         binding!!.countLabel.text = getString(R.string.count_label, quizCount)
 
@@ -511,6 +511,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
     }
 
+    //問題の時間切れでオーバーしたときダイアログが２，３個出てきた。
+    //クリックして、間違えたときに、相手に早押しボタンが出なかった。
+    //時間切れでダメだった時、問題の時間が動かなかった。
 
     override fun onClick(v: View) {
         //効果音を鳴らす
