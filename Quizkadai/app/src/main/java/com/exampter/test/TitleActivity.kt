@@ -1,7 +1,9 @@
 package com.exampter.test
 
 import android.content.Intent
+import android.media.AudioAttributes
 import android.media.MediaPlayer
+import android.media.SoundPool
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -15,6 +17,9 @@ import com.google.firebase.database.FirebaseDatabase
 
 class TitleActivity : AppCompatActivity() {
     private var bgmPlayer: MediaPlayer? =null  //BGM用のプレイヤー
+    private lateinit var soundPool: SoundPool //効果音用
+    private var soundId: Int = 0              //効果音ID
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,10 +30,25 @@ class TitleActivity : AppCompatActivity() {
         bgmPlayer?.isLooping = true //ループ再生
         bgmPlayer?.start()
 
+        //効果音の準備
+        val audioAttributes = AudioAttributes.Builder()
+            .setUsage(AudioAttributes.USAGE_GAME)
+            .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+            .build()
+
+        soundPool = SoundPool.Builder()
+            .setMaxStreams(1)
+            .setAudioAttributes(audioAttributes)
+            .build()
+
+        soundId = soundPool.load(this, R.raw.buttn, 1) //se再生
+
 
         val startButton = findViewById<Button>(R.id.startButton)        //ボタン操作できるように
         //ボタンをクリックしたときにおこることを登録
         startButton.setOnClickListener { v: View? ->
+            //効果音を鳴らす
+            soundPool.play(soundId, 1f, 1f, 0, 0, 1f)
             // 名前入力なしで「ゲスト」として開始
             val playerName = "ゲスト"  //名前入力するところあったっけ？
             val intent = Intent(this@TitleActivity, HomeActivity::class.java)       //次の画面へ
@@ -64,6 +84,8 @@ class TitleActivity : AppCompatActivity() {
         //リソース開放
         bgmPlayer?.release()
         bgmPlayer = null
+
+        soundPool.release()
     }
 
 
