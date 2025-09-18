@@ -84,6 +84,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
                 //二人いても、途中で一人が抜けたら、ルームがなくなってしまうのか？---------------------------------------------------
                 //roomRef.child(myPlayerKey).onDisconnect().removeValue()  // ネット切断・アプリ強制終了時にも自動で削除
+                roomRef.child("answers").onDisconnect().removeValue()
+                roomRef.child("okPressed").onDisconnect().removeValue()
                 ////////<<<<<<<<<<<<<<<<やること>>>>>>>>>>>>>>>>>>>>>>>>
                 //制限時間を付ける、１問当たりの時間、早押しボタンを押してからの時間。UIもあるとよい
                 //最後にスコアを表示する、どっちが勝ったかの勝敗を付ける。
@@ -217,7 +219,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 val answers1 = snapshot.child("player1").getValue(String::class.java)
                 val answers2 = snapshot.child("player2").getValue(String::class.java)
 
-                if (answers1 == "wrong" && answers2 == "wrong")
+                if (answers1 == "wrong" && answers2 == "wrong")//二人とも不正解
                 {
                     dialog()
                     //answrsは１問が終わるごとにリセットする。
@@ -226,8 +228,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     //これで、ダイアログの下の選択肢が非表示になったかな
                     allisenabledfalse()
                 }
-                else if (answers1 == "correct" || answers2 == "correct")
+                else if (answers1 == "correct" || answers2 == "correct")//二人のどっちかが正解
                 {
+                    buzzTimer?.cancel()
                     dialog()
                     roomRef.child("answers").setValue(null)
                     roomRef.child("answers").setValue(null)
@@ -247,12 +250,14 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                             {
                                 //押した人の選択肢と早押しボタンが消える。
                                 allisenabledfalse()
+                                buzzTimer?.cancel()
                             }
                             else
                             {
                                 //誰かが間違えたら、強制的に他の人が解答になる。
                                 isenabledfalse()
                                 resumeCountdown()
+                                startBuzzTimer()
                             }
                         }
 
@@ -277,6 +282,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
                 if (quizCount == QUIZ_COUNT) {
                     //ここで軽いファイルを宣言している。そして、データを保存している。
+                    //この上の部分は無くていい。一応残す
                     val prefs = getSharedPreferences("QuizPrefs", MODE_PRIVATE)
                     val editor = prefs.edit()
                     var totalScore = prefs.getInt(playerName + "_total_score", 0)
@@ -376,6 +382,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         }.start()
     }
 
+    //早押しボタンを押した後の制限時間
     private fun startBuzzTimer()
     {
         buzzTimer?.cancel()
